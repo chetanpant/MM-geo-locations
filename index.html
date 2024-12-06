@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Interactive Bubble Map - Mumbai</title>
+    <style>
+        /* Set the size of the map */
+        #map {
+            height: 600px;
+            width: 100%;
+        }
+        /* Style for the info box displaying latitude and longitude */
+        #infoBox {
+            background-color: rgba(255, 255, 255, 0.7);
+            border: 1px solid #ccc;
+            padding: 10px;
+            position: absolute;
+            display: none;
+            z-index: 10;
+        }
+    </style>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD1KB0fHVdt425ANsBkS98AJPO-AlpNKs0"></script>
+    <script>
+        let infoBox;
+
+        function initMap() {
+            // Initialize the map centered in Mumbai
+            const mumbaiCenter = { lat: 19.0760, lng: 72.8777 };
+            const map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 12,
+                center: mumbaiCenter,
+            });
+
+            // Latitude and Longitude pairs for 249 locations
+            const locations = [
+                { lat: 41.725556, lng: -49.946944 },
+                { lat: 19.0692165, lng: 72.8783428 },
+                { lat: 19.0692282, lng: 72.878334 },
+                { lat: 19.1966431, lng: 72.8273234 },
+                { lat: 19.1023139, lng: 72.832327 },
+                { lat: 19.1314185, lng: 72.8140805 },
+                { lat: 19.1842478, lng: 72.8217544 },
+                { lat: 19.1073816, lng: 72.8853704 },
+                { lat: 19.2077329, lng: 72.9927809 },
+                { lat: 19.1041995, lng: 72.915272 },
+                { lat: 19.1314221, lng: 72.8141023 },
+                { lat: 19.2002201, lng: 72.8608823 },
+                { lat: 19.1228235, lng: 72.8413084 },
+                { lat: 19.1853007, lng: 72.8188991 },
+                { lat: 19.2002571, lng: 72.828482 },
+                { lat: 19.2009393, lng: 72.8288329 },
+                { lat: 28.6498119, lng: 77.2114709 },
+                { lat: 28.647625, lng: 77.2141444 },
+                { lat: 19.1868132, lng: 72.8570545 },
+                { lat: 19.2002571, lng: 72.828482 },
+                { lat: 28.6479324, lng: 77.2375095 },
+                { lat: 28.6372571, lng: 77.234438 },
+                { lat: 19.1314265, lng: 72.8141085 },
+                { lat: 19.2581981, lng: 72.8587351 },
+                { lat: 19.1301781, lng: 72.856706 },
+                { lat: 19.1314261, lng: 72.8141142 },
+                { lat: 19.0692478, lng: 72.8783545 },
+                { lat: 19.0691961, lng: 72.8783193 },
+                { lat: 19.1314271, lng: 72.8141034 },
+                { lat: 19.0606671, lng: 72.8448408 },
+                { lat: 19.1314163, lng: 72.8140311 },
+                { lat: 28.6525576, lng: 77.2146352 },
+                { lat: 19.1228235, lng: 72.8413084 },
+                { lat: 19.0948334, lng: 72.89749 },
+                { lat: 19.253578, lng: 72.8534983 },
+                { lat: 37.3898048, lng: -122.0814132 },
+                { lat: 28.6466048, lng: 77.2143381 },
+                { lat: 26.8745379, lng: 80.9648153 },
+                { lat: 19.0692283, lng: 72.8783292 },
+                { lat: 19.1314226, lng: 72.8141026 },
+                { lat: 19.0692037, lng: 72.8783129 },
+                { lat: 19.2002571, lng: 72.828482 },
+                { lat: 28.5655734, lng: 77.2395256 },
+                { lat: 28.6470757, lng: 77.2095144 },
+                { lat: 19.1853007, lng: 72.8188991 },
+                { lat: 19.1941661, lng: 72.8167756 },
+                { lat: 28.6467422, lng: 77.2341224 },
+                { lat: 25.6099701, lng: 85.1377487 },
+                { lat: 19.1314215, lng: 72.8141049 },
+                { lat: 19.0691952, lng: 72.878332 },
+                { lat: 41.725556, lng: -49.946944 },
+                { lat: 23.3686752, lng: 85.3248596 },
+                { lat: 37.3937318, lng: -122.0810514 },
+                { lat: 28.6492766, lng: 77.2163455 },
+                { lat: 28.6481376, lng: 77.2145891 },
+                { lat: 37.3903695, lng: -122.0809555 },
+                { lat: 19.0979918, lng: 73.0041531 },
+                { lat: 19.1314185, lng: 72.8141061 },
+                { lat: 19.131415, lng: 72.814108 },
+                { lat: 19.1897722, lng: 72.8248994 },
+                { lat: 19.1902828, lng: 72.8609156 },
+                { lat: 19.0980576, lng: 73.0041114 },
+                { lat: 19.1313853, lng: 72.8140952 },
+                { lat: 19.0692091, lng: 72.8783093 },
+                { lat: 19.1314207, lng: 72.8141027 },
+                { lat: 41.725556, lng: -49.946944 },
+                { lat: 28.6492766, lng: 77.2163455 },
+                { lat: 19.1314319, lng: 72.8141085 },
+                { lat: 19.1320985, lng: 72.85591 },
+                { lat: 19.1111612, lng: 72.8761328 },
+                { lat: 19.1314622, lng: 72.8140342 },
+                { lat: 19.0727876, lng: 73.555169 },
+                { lat: 28.5638729, lng: 77.2353933 },
+                { lat: 19.1314218, lng: 72.8141058 },
+                { lat: 19.1314054, lng: 72.8140907 },
+                { lat: 37.3584565, lng: -122.0678248 },
+                { lat: 19.2009339, lng: 72.8288408 },
+                { lat: 19.1141678, lng: 72.8383347 },
+                { lat: 38.7062007, lng: -100.1389687 },
+                { lat: 19.1314236, lng: 72.8141017 },
+                { lat: 41.725556, lng: -49.946944 },
+                { lat: 19.1314259, lng: 72.814101 },
+                { lat: 29.3578462, lng: 79.5481771 },
+                { lat: 19.1120633, lng: 72.8766274 },
+                { lat: 19.1954628, lng: 72.8257848 },
+                { lat: 19.1314512, lng: 72.8140662 },
+                { lat: 23.3686752, lng: 85.3248596 },
+                { lat: 19.1237016, lng: 72.8582974 },
+                { lat: 19.1388955, lng: 72.8742232 },
+                { lat: 37.3593567, lng: -122.0690152 },
+                { lat: 19.207056, lng: 72.986849 },
+                { lat: 28.6522743, lng: 77.2118285 },
+                { lat: 28.647623, lng: 77.212771 },
+                { lat: 19.0708584, lng: 72.8853699 },
+                { lat: 19.2002216, lng: 72.8783595 },
+                { lat: 19.0911255, lng: 72.8324672 },
+                { lat: 19.0706675, lng: 72.8791908 },
+                { lat: 19.1314058, lng: 72.8141009 },
+                { lat: 19.1314227, lng: 72.8141079 },
+                { lat: 19.1998761, lng: 72.828658 },
+                { lat: 19.2076261, lng: 72.9873147 },
+                { lat: 28.6560395, lng: 77.2072155 },
+                { lat: 28.6331325, lng: 77.2144792 },
+                { lat: 19.131421, lng: 72.814108 },
+                { lat: 19.1865227, lng: 72.8587221 },
+                { lat: 19.2003658, lng: 72.8284097 },
+                { lat: 41.735557, lng: -49.946944 }
+            ];
+
+            // Create an info box for showing coordinates
+            infoBox = document.createElement("div");
+            infoBox.id = "infoBox";
+            document.body.appendChild(infoBox);
+
+            // Add medium-sized dots for each location
+            locations.forEach((location) => {
+                const dot = new google.maps.Marker({
+                    position: location,
+                    map: map,
+                    icon: {
+                        path: google.maps.SymbolPath.CIRCLE, // Circle shape for the marker
+                        scale: 18, // Medium dot size
+                        fillColor: getRandomColor(), // Random color for each dot
+                        fillOpacity: 0.7,
+                        strokeColor: 'white',
+                        strokeWeight: 1,
+                    },
+                });
+
+                // Add event listener for mouseover to show the coordinates
+                google.maps.event.addListener(dot, 'mouseover', function() {
+                    infoBox.style.display = 'block';
+                    infoBox.innerHTML = `Lat: ${location.lat}<br>Lng: ${location.lng}`;
+                    infoBox.style.left = `${event.clientX + 10}px`;
+                    infoBox.style.top = `${event.clientY + 10}px`;
+                });
+
+                // Hide the info box when the mouse leaves the marker
+                google.maps.event.addListener(dot, 'mouseout', function() {
+                    infoBox.style.display = 'none';
+                });
+            });
+        }
+
+        // Function to generate a random color
+        function getRandomColor() {
+            const letters = '0123456789ABCDEF';
+            let color = '#';
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+    </script>
+</head>
+<body onload="initMap()">
+    <div id="map"></div>
+</body>
+</html>
